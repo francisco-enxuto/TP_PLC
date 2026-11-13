@@ -6,6 +6,7 @@ tokens = (
     'INTEGER',
     'REAL',
     'LOGICAL',
+    'CHARACTER',
     'IF',
     'THEN',
     'ELSE',
@@ -56,6 +57,10 @@ def t_LOGICAL(t):
     r'[lL][oO][gG][iI][cC][aA][lL]'
     return t
 
+def t_CHARACTER(t):
+    r'[cC][hH][aA][rR][aA][cC][tT][eE][rR]'
+    return t
+
 def t_IF(t):
     r'[iI][fF]'
     return t
@@ -100,8 +105,8 @@ def t_COMMENT(t):
     r'C     .*'
     pass  # Ignora comentários
 
-t_TRUE = r'[tT][rR][uU][eE]'
-t_FALSE = r'[fF][aA][lL][sS][eE]'
+t_TRUE = r'\.[tT][rR][uU][eE]\.'
+t_FALSE = r'\.[fF][aA][lL][sS][eE]\.'
 
 t_EQ = r'\.EQ\.'
 t_NE = r'\.NE\.'
