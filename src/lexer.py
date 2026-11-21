@@ -1,5 +1,6 @@
 from ply import lex
 
+
 # Pode ter mais, acrescentar depois
 tokens = (
     'PROGRAM', # Palavras chave
@@ -32,13 +33,12 @@ tokens = (
     'INT',
     'STRING',
     'FLOAT',
-    'COMMENT'
 )
 
 literals = {'+', '(', ')', '-', '*', '/', '=', ',', ';'}
 
 def t_STRING(t):
-    r'\'.*\''
+    r"'[^']*'"
     return t
 
 def t_PROGRAM(t):
@@ -101,9 +101,6 @@ def t_END(t):
     r'[eE][nN][dD]'
     return t
 
-def t_COMMENT(t):
-    r'C     .*'
-    pass  # Ignora comentários
 
 t_TRUE = r'\.[tT][rR][uU][eE]\.'
 t_FALSE = r'\.[fF][aA][lL][sS][eE]\.'
@@ -133,12 +130,92 @@ def t_error(t):
   print(f"Caractere inválido '{t.value[0]}' na linha {t.lexer.lineno}")
   t.lexer.skip(1)
 
+
+def preprocess(t):
+    statements = [] 
+
+    for lineno, line in enumerate(t.splitlines(), start=1):
+        # 1 blank line
+        if line.strip() == '':
+            continue
+
+        # 2 comment line: C, c, * in column 1
+        if line[0] in ('C','c','*'):
+            continue
+
+        # 3 split into the fixed form fields
+        label = line[0:5] # column 1-5
+        cont = line[5] # column 6
+        body = line[6:72] # column 7-72
+
+        if cont not in ('', ' '):
+            if not statements:
+                raise SyntaxError(f"linha {lineno}: continuação sem instrução anterior")
+            if label.strip():
+                raise SyntaxError(f"linha {lineno}: Coluna de continuação não pode ter label")
+            if cont == '0':
+                raise SyntaxError(f"linha {lineno}: {cont} não é um caractér de continuação válido")
+            statements[-1][1] += body
+
+        else: 
+            lab = label.strip()
+            if lab and not lab.isdigit():
+                raise SyntaxError(f"linha {lineno}: label inválido '{lab}'")
+            statements.append([lab, body, lineno])
+
+    lines = [f"{lab} {text}" if lab else text for lab, text, _ in statements]
+    return '\n' + '\n'.join(lines) + '\n'
+
+
+
+
+
+
+
+
+
 lexer = lex.lex()
 
 # ---
-import sys
 
-for linha in sys.stdin:
-    lexer.input(linha)
+if __name__ == "__main__":
+    import sys
+    codigo = preprocess(sys.stdin.read())
+    print("\n")
+    print('==================== Código pré-processado ====================')
+    print(codigo)                           # see the cleaned text
+    lexer.input(codigo)
     for tok in lexer:
         print(tok)
+
+
+# import sys
+# for linha in sys.stdin:
+#     lexer.input(linha)
+#     for tok in lexer:
+#         print(tok)
+
+
+'''
+column:  1 2 3 4 5 | 6 | 7 ............................ 72 | 73+
+         [ label   ][c][ statement                       ] [ignored]
+
+source text ──► preprocess() ──► clean text ──► lexer ──► parser
+               (columns, comments,
+                continuations)
+
+The algorithm:
+For each physical line:
+Column 1 is C, c or * → comment, skip it.
+The line is blank → skip it.
+Otherwise, cut the line into its parts:
+label = line[0:5] → columns 1–5
+cont = line[5:6] → column 6
+body = line[6:72] → columns 7–72 (anything after 72 is thrown away; on old punched cards that area held sequence numbers)
+Column 6 is not blank and not '0' → this is a continuation line. Append its body to the previous statement.
+Otherwise it’s a new statement. Save (label, body).
+
+
+
+
+'''

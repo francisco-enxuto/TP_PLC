@@ -2,6 +2,8 @@ from ply import yacc
 from lexer import lexer, tokens
 
 # Regras gramaticais agrupadas
+
+# Mudar nomes das gramáticas
 def p_gramatica(p):
     """
     Programa : PROGRAM VAR Linhas END
