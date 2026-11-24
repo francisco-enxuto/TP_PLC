@@ -71,10 +71,10 @@ exemplo = """
       END
 """
 
-# for frase in exemplos:
-parser.success = True  # Reinicialização essencial!
-parser.parse(exemplo, lexer=lexer)
-if parser.success:
-    print(f"✓ VÁLIDA:   {exemplo}")
-else:
-    print(f"✗ INVÁLIDA: {exemplo}")
+### for frase in exemplos:
+##parser.success = True  # Reinicialização essencial!
+##parser.parse(exemplo, lexer=lexer)
+##if parser.success:
+##    print(f"✓ VÁLIDA:   {exemplo}")
+##else:
+##    print(f"✗ INVÁLIDA: {exemplo}")

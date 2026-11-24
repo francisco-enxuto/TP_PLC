@@ -1,3 +1,5 @@
+import re
+
 from ply import lex
 
 # Pode ter mais, acrescentar depois
@@ -42,82 +44,83 @@ def t_STRING(t):
     return t
 
 def t_PROGRAM(t):
-    r'[pP][rR][oO][gG][rR][aA][mM]'
+    r'program'
     return t
 
 def t_INTEGER(t):
-    r'[iI][nN][tT][eE][gG][eE][rR]'
+    r'integer'
     return t
 
 def t_REAL(t):
-    r'[rR][eE][aA][lL]'
+    r'real'
     return t
 
 def t_LOGICAL(t):
-    r'[lL][oO][gG][iI][cC][aA][lL]'
+    r'logical'
     return t
 
 def t_CHARACTER(t):
-    r'[cC][hH][aA][rR][aA][cC][tT][eE][rR]'
+    r'character'
     return t
 
 def t_IF(t):
-    r'[iI][fF]'
+    r'if'
     return t
 
 def t_THEN(t):
-    r'[tT][hH][eE][nN]'
+    r'then'
     return t
 
 def t_ELSE(t):
-    r'[eE][lL][sS][eE]'
+    r'else'
     return t
 
 def t_ENDIF(t):
-    r'[eE][nN][dD][iI][fF]'
+    r'endif'
     return t
 
 def t_DO(t):
-    r'[dD][oO]'
+    r'do'
     return t
 
 def t_CONTINUE(t):
-    r'[cC][oO][nN][tT][iI][nN][uU][eE]'
+    r'continue'
     return t
 
 def t_GOTO(t):
-    r'[gG][oO][tT][oO]'
+    r'goto'
     return t
 
 def t_READ(t):
-    r'[rR][eE][aA][dD]'
+    r'read'
     return t
 
 def t_PRINT(t):
-    r'[pP][rR][iI][nN][tT]'
+    r'print'
     return t
 
 def t_END(t):
-    r'[eE][nN][dD]'
+    r'end'
     return t
 
 def t_COMMENT(t):
     r'C     .*'
     pass  # Ignora comentários
 
-t_TRUE = r'\.[tT][rR][uU][eE]\.'
-t_FALSE = r'\.[fF][aA][lL][sS][eE]\.'
 
-t_EQ = r'\.[eE][qQ]\.'
-t_NE = r'\.[nN][eE]\.'
-t_LT = r'\.[lL][tT]\.'
-t_LE = r'\.[lL][eE]\.'
-t_GT = r'\.[gG][tT]\.'
-t_GE = r'\.[gG][eE]\.'
+t_TRUE = r'\.true\.'
+t_FALSE = r'\.false\.'
 
-t_AND = r'\.[aA][nN][dD]\.'
-t_OR = r'\.[oO][rR]\.'
-t_NOT = r'\.[nN][oO][tT]\.'
+t_EQ = r'\.eq\.'
+t_NE = r'\.ne\.'
+t_LT = r'\.lt\.'
+t_LE = r'\.le\.'
+t_GT = r'\.gt\.'
+t_GE = r'\.ge\.'
+
+t_AND = r'\.and\.'
+t_OR = r'\.or\.'
+t_NOT = r'\.not\.'
 
 t_VAR = r'[a-zA-Z_][a-zA-Z0-9_]*'
 t_INT = r'\d+'
@@ -130,10 +133,10 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 def t_error(t):
-  print(f"Caractere inválido '{t.value[0]}' na linha {t.lexer.lineno}")
-  t.lexer.skip(1)
+    print(f"Caractere inválido '{t.value[0]}' na linha {t.lexer.lineno}")
+    t.lexer.skip(1)
 
-lexer = lex.lex()
+lexer = lex.lex(reflags=re.IGNORECASE) #com isto o lexer ignora maiúsculas e minúsculas, ou seja, não diferencia "program" de "PROGRAM"
 
 # ---
 import sys
