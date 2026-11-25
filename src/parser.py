@@ -16,6 +16,28 @@ def p_gramatica(p):
     Conteudo : DO INT VAR '=' VarInt ',' VarInt 
     Conteudo : READ '*' ',' VAR
     Conteudo : VAR '=' expression
+    Conteudo : IF Logica THEN Linhas ELSE Linhas ENDIF
+    
+    Logica : Logica OR LogicaAnd
+            | LogicaAnd
+
+    LogicaAnd : LogicaAnd AND LogicaNot
+              | LogicaNot
+
+    LogicaNot : NOT LogicaNot
+              | LogicaRel
+
+    LogicaRel : expression Op_Relacional expression
+              | TRUE
+              | FALSE
+              | '(' Logica ')'
+
+    Op_Relacional : EQ 
+                | NE 
+                | LT 
+                | LE 
+                | GT 
+                | GE
 
     Valores : Valores ',' Valor
             | Valor
@@ -71,10 +93,10 @@ exemplo = """
       END
 """
 
-### for frase in exemplos:
-##parser.success = True  # Reinicialização essencial!
-##parser.parse(exemplo, lexer=lexer)
-##if parser.success:
-##    print(f"✓ VÁLIDA:   {exemplo}")
-##else:
-##    print(f"✗ INVÁLIDA: {exemplo}")
+#for frase in exemplo:
+parser.success = True  # Reinicialização essencial!
+parser.parse(exemplo, lexer=lexer)
+if parser.success:
+    print(f"✓ VÁLIDA:   {exemplo}")
+else:
+    print(f"✗ INVÁLIDA: {exemplo}")
